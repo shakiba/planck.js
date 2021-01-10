@@ -19,6 +19,12 @@ var world = planck.World({
 });
 ```
 
+If the parameter is a `planck.Vec2` type object, it will be interpreted as a value for gravity option:
+
+```js
+var world = planck.World(planck.Vec2(0, -10));
+```
+
 Bodies are directly created and added to world.
 Each body is composed of a number of fixtures which are fixed together, that is a body is a set of shapes with physical properties.
 Bodies have position, angle, linear velocity, angular velocity, etc. which can be changed by applying linear and angular forces or impulses.
