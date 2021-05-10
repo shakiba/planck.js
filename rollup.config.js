@@ -10,33 +10,13 @@ import declarationTransformer from './declarationTransformer';
 
 import licenseBanner from './license';
 
+const functionClasses = [
+  'Vec2', 'Vec3', 'Rot', 'Transform', 'AABB', 'World', 'BoxShape', 'CircleShape',
+  'ChainShape', 'EdgeShape', 'PolygonShape', 'DistanceJoint', 'FrictionJoint', 'GearJoint', 'MotorJoint',
+  'MouseJoint', 'PrismaticJoint', 'PulleyJoint', 'RevoluteJoint', 'RopeJoint', 'WeldJoint', 'WheelJoint'
+];
 
-export default [
-  {
-    src: 'src/index.ts',
-    dest: 'dist/planck.js',
-    minimize: false,
-    declaration: true,
-  },
-  {
-    src: 'src/index.ts',
-    dest: 'dist/planck.min.js',
-    minimize: true,
-    declaration: false,
-  },
-  {
-    src: 'testbed/index.ts',
-    dest: 'dist/planck-with-testbed.js',
-    minimize: false,
-    declaration: true,
-  },
-  {
-    src: 'testbed/index.ts',
-    dest: 'dist/planck-with-testbed.min.js',
-    minimize: true,
-    declaration: false,
-  }
-].map(options => {
+export const configFactory = options => {
   const config = {
     input: options.src,
     output: {
@@ -65,30 +45,7 @@ export default [
         transformers: {
           afterDeclarations: [
             declarationTransformer({
-              classes: [
-                'Vec2',
-                'Vec3',
-                'Rot',
-                'Transform',
-                'AABB',
-                'World',
-                'BoxShape',
-                'CircleShape',
-                'ChainShape',
-                'EdgeShape',
-                'PolygonShape',
-                'DistanceJoint',
-                'FrictionJoint',
-                'GearJoint',
-                'MotorJoint',
-                'MouseJoint',
-                'PrismaticJoint',
-                'PulleyJoint',
-                'RevoluteJoint',
-                'RopeJoint',
-                'WeldJoint',
-                'WheelJoint',
-              ]
+              classes: functionClasses
             })
           ]
         },
@@ -100,9 +57,40 @@ export default [
       license({
         banner: licenseBanner,
       }),
-      {...(options.minimize ? terser() : null)},
+      {...(options.minimize ? terser({
+          format: {
+            comments: false,
+          }
+        }) : null)},
       filesize(),
     ]
   };
   return config;
-})
+};
+
+export default [
+  {
+    src: 'src/index.ts',
+    dest: 'dist/planck.js',
+    minimize: false,
+    declaration: true,
+  },
+  {
+    src: 'src/index.ts',
+    dest: 'dist/planck.min.js',
+    minimize: true,
+    declaration: false,
+  },
+  {
+    src: 'testbed/index.ts',
+    dest: 'dist/planck-with-testbed.js',
+    minimize: false,
+    declaration: true,
+  },
+  {
+    src: 'testbed/index.ts',
+    dest: 'dist/planck-with-testbed.min.js',
+    minimize: true,
+    declaration: false,
+  }
+].map(configFactory);
