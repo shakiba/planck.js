@@ -5,11 +5,12 @@ import Vec2 from '../common/Vec2';
 import AABB from '../collision/AABB';
 import DynamicTree from '../collision/DynamicTree';
 import BroadPhase from '../collision/BroadPhase';
+import { FixtureProxy } from "../dynamics/Fixture";
 
-describe('Collision', function() {
+describe('Collision', function(): void {
 
-  it('AABB', function() {
-    var r, o = AABB();
+  it('AABB', function(): void {
+    var r, o = new AABB();
     expect(o.isValid()).equal(true);
 
     o.upperBound.set(10, 6);
@@ -26,23 +27,23 @@ describe('Collision', function() {
     r = o.getPerimeter();
     expect(r).equal(12);
 
-    o.combine(AABB(Vec2(7, 4), Vec2(9, 6)));
+    o.combine(new AABB(new Vec2(7, 4), new Vec2(9, 6)));
     expect(o.upperBound.x).equal(10);
     expect(o.upperBound.y).equal(6);
     expect(o.lowerBound.x).equal(6);
     expect(o.lowerBound.y).equal(4);
 
-    o.combine(AABB(Vec2(5, 3), Vec2(11, 7)));
+    o.combine(new AABB(new Vec2(5, 3), new Vec2(11, 7)));
     expect(o.upperBound.x).equal(11);
     expect(o.upperBound.y).equal(7);
     expect(o.lowerBound.x).equal(5);
     expect(o.lowerBound.y).equal(3);
 
-    expect(o.contains(AABB(Vec2(5, 3), Vec2(11, 7)))).equal(true);
-    expect(o.contains(AABB(Vec2(5, 2), Vec2(11, 7)))).equal(false);
-    expect(o.contains(AABB(Vec2(4, 2), Vec2(11, 7)))).equal(false);
-    expect(o.contains(AABB(Vec2(5, 3), Vec2(11, 8)))).equal(false);
-    expect(o.contains(AABB(Vec2(5, 3), Vec2(12, 7)))).equal(false);
+    expect(o.contains(new AABB(new Vec2(5, 3), new Vec2(11, 7)))).equal(true);
+    expect(o.contains(new AABB(new Vec2(5, 2), new Vec2(11, 7)))).equal(false);
+    expect(o.contains(new AABB(new Vec2(4, 2), new Vec2(11, 7)))).equal(false);
+    expect(o.contains(new AABB(new Vec2(5, 3), new Vec2(11, 8)))).equal(false);
+    expect(o.contains(new AABB(new Vec2(5, 3), new Vec2(12, 7)))).equal(false);
 
     // rayCast
   });
@@ -50,9 +51,9 @@ describe('Collision', function() {
   it('DynamicTree', function() {
     var tree = new DynamicTree();
 
-    var foo = tree.createProxy(AABB(Vec2(0, 0), Vec2(1, 1)), 'foo');
-    var bar = tree.createProxy(AABB(Vec2(1, 1), Vec2(2, 2)), 'bar');
-    var baz = tree.createProxy(AABB(Vec2(2, 2), Vec2(3, 3)), 'baz');
+    var foo = tree.createProxy(new AABB(new Vec2(0, 0), new Vec2(1, 1)), 'foo');
+    var bar = tree.createProxy(new AABB(new Vec2(1, 1), new Vec2(2, 2)), 'bar');
+    var baz = tree.createProxy(new AABB(new Vec2(2, 2), new Vec2(3, 3)), 'baz');
 
     expect(tree.getHeight()).equal(2);
 
@@ -68,25 +69,25 @@ describe('Collision', function() {
     var QueryCallback = sinon.spy();
     var callback = QueryCallback;
 
-    tree.query(AABB(Vec2(1, 1), Vec2(2, 2)), callback);
+    tree.query(new AABB(new Vec2(1, 1), new Vec2(2, 2)), callback);
     expect(QueryCallback.calledWith(foo)).equal(true);
     expect(QueryCallback.calledWith(bar)).equal(true);
     expect(QueryCallback.calledWith(baz)).equal(true);
 
-    tree.query(AABB(Vec2(0.3, 0.3), Vec2(0.7, 0.7)),callback);
+    tree.query(new AABB(new Vec2(0.3, 0.3), new Vec2(0.7, 0.7)),callback);
     expect(QueryCallback.lastCall.calledWith(foo)).equal(true);
 
-    tree.query(AABB(Vec2(1.3, 1.3), Vec2(1.7, 1.7)), callback);
+    tree.query(new AABB(new Vec2(1.3, 1.3), new Vec2(1.7, 1.7)), callback);
     expect(QueryCallback.lastCall.calledWith(bar)).equal(true);
 
-    tree.query(AABB(Vec2(2.3, 2.3), Vec2(2.7, 2.7)), callback);
+    tree.query(new AABB(new Vec2(2.3, 2.3), new Vec2(2.7, 2.7)), callback);
     expect(QueryCallback.lastCall.calledWith(baz)).equal(true);
 
-    expect(tree.moveProxy(foo, AABB(Vec2(0, 0), Vec2(1, 1)), Vec2(0.01, 0.01))).equal(false);
+    expect(tree.moveProxy(foo, new AABB(new Vec2(0, 0), new Vec2(1, 1)), new Vec2(0.01, 0.01))).equal(false);
 
-    expect(tree.moveProxy(baz, AABB(Vec2(3, 3), Vec2(4, 4)), Vec2(0, 0))).equal(true);
+    expect(tree.moveProxy(baz, new AABB(new Vec2(3, 3), new Vec2(4, 4)), new Vec2(0, 0))).equal(true);
 
-    tree.query(AABB(Vec2(3.3, 3.3), Vec2(3.7, 3.7)), callback);
+    tree.query(new AABB(new Vec2(3.3, 3.3), new Vec2(3.7, 3.7)), callback);
     expect(QueryCallback.lastCall.calledWith(baz)).equal(true);
 
     tree.destroyProxy(foo);
@@ -106,13 +107,16 @@ describe('Collision', function() {
     var AddPair = sinon.spy();
     var callback = AddPair;
 
-    var foo = bp.createProxy(AABB(Vec2(0, 0), Vec2(1, 1)), 'foo');
-    var bar = bp.createProxy(AABB(Vec2(2, 2), Vec2(3, 3)), 'bar');
+    // @ts-ignore
+    var foo = bp.createProxy(new AABB(new Vec2(0, 0), new Vec2(1, 1)), 'foo');
+    // @ts-ignore
+    var bar = bp.createProxy(new AABB(new Vec2(2, 2), new Vec2(3, 3)), 'bar');
 
     bp.updatePairs(callback);
     expect(AddPair.callCount).equal(0);
 
-    var baz = bp.createProxy(AABB(Vec2(1, 1), Vec2(2, 2)), 'baz');
+    // @ts-ignore
+    var baz = bp.createProxy(new AABB(new Vec2(1, 1), new Vec2(2, 2)), 'baz');
 
     AddPair.resetHistory();
     bp.updatePairs(callback);
@@ -120,7 +124,7 @@ describe('Collision', function() {
     expect(AddPair.calledWith('bar', 'baz')).equal(true);
     expect(AddPair.calledWith('foo', 'baz')).equal(true);
 
-    bp.moveProxy(baz, AABB(Vec2(0.5, 0.5), Vec2(1.5, 1.5)), Vec2());
+    bp.moveProxy(baz, new AABB(new Vec2(0.5, 0.5), new Vec2(1.5, 1.5)), new Vec2());
 
     AddPair.resetHistory();
     bp.updatePairs(callback);

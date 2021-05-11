@@ -6,16 +6,16 @@ import World from '../dynamics/World';
 
 import '../collision/shape/CollideCircle';
 
-describe('Basic', function() {
+describe('Basic', function(): void {
 
-  it('World', function() {
+  it('World', function(): void {
 
     var world = new World();
 
     var circle = new Circle(1);
 
     var b1 = world.createBody({
-      position : Vec2(0, 0),
+      position : new Vec2(0, 0),
       type : 'dynamic'
     });
 
@@ -25,14 +25,14 @@ describe('Basic', function() {
     expect(b1.getWorld()).equal(world);
     expect(world.getBodyList()).equal(b1);
 
-    b1.applyForceToCenter(Vec2(1, 0), true);
+    b1.applyForceToCenter(new Vec2(1, 0), true);
 
     var b2 = world.createBody({
-      position : Vec2(2, 0),
+      position : new Vec2(2, 0),
       type : 'dynamic'
     });
     b2.createFixture(circle);
-    b2.applyForceToCenter(Vec2(-1, 0), true);
+    b2.applyForceToCenter(new Vec2(-1, 0), true);
 
     world.step(1 / 20);
 

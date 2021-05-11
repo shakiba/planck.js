@@ -2,25 +2,31 @@ import { expect } from 'chai';
 
 import Pool from '../util/Pool';
 
-describe('Pool', function() {
-  it('Pool', function() {
+describe('Pool', function(): void {
+  it('Pool', function(): void {
 
-    var pool = new Pool({
-      create : function() {
+    interface Type {
+      busy: boolean;
+      discarded: boolean;
+      created: boolean;
+    }
+    var pool = new Pool<Type>({
+      create : function(): Type {
         return {
           created : true,
           busy : false,
           discarded : false,
         };
       },
-      allocate : function(obj) {
+      allocate : function(obj: Type): void {
         obj.busy = true;
       },
-      release : function(obj) {
+      release : function(obj: Type): void {
         obj.busy = false;
       },
-      discard : function(obj) {
+      discard : function(obj: Type): Type {
         obj.discarded = true;
+        return;
       },
       max : 1
     });

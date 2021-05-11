@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "module": "commonjs",
         // "strictNullChecks": true,
         // "noImplicitAny": true,
         "lib": ["ES2015", "DOM"],
